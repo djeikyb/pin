@@ -11,23 +11,21 @@ fn main() {
         }
         Some(a) => a
     };
-    let length = match length_unparsed.parse::<u32>() {
+
+    let length = match length_unparsed.parse::<usize>() {
         Ok(n) => n,
         Err(_) => {
-            eprintln!("Not a number: {length_unparsed}");
+            eprintln!("Not a number or too big: {length_unparsed}");
             std::process::exit(-1);
         }
     };
 
     let mut rng = thread_rng();
-    let max = match 10u32.checked_pow(length) {
-        None => {
-            eprintln!("Can't generate that long of a pin.");
-            std::process::exit(-1);
-        }
-        Some(n) => n
-    };
-    let pin = rng.gen_range(0..max);
-
+    let mut arr: Vec<u8> = Vec::with_capacity(length);
+    arr.resize(length, 0u8);
+    for i in (0..length).rev() {
+        arr[i] = rng.gen_range(0..10) + 48;
+    }
+    let pin = std::str::from_utf8(arr.as_slice()).unwrap();
     println!("{}", pin);
 }
